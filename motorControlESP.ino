@@ -1,24 +1,3 @@
-// #include <SoftwareSerial.h>
-
-// SoftwareSerial mySerial(D5, -1);  // RX pin = D0, no TX pin
-
-// void setup() {
-//   Serial.begin(115200);     // ESP serial monitor
-//   mySerial.begin(9600);     // SoftwareSerial to Arduino TX
-//   Serial.println("ESP ready and listening...");
-// }
-
-// void loop() {
-//   if (mySerial.available()) {
-//     String received = mySerial.readStringUntil('\n');
-//     Serial.print("Received from Arduino: ");
-//     Serial.println(received);
-//   }
-// }
-
-
-
-#include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 
@@ -36,7 +15,6 @@ const int trigPin = D6;
 const int echoPin = D5;
 
 ESP8266WebServer server(80);
-SoftwareSerial mySerial(D5, -1);
 
 const char* ssid = "AFB not working";
 const char* password = "itisworking";
@@ -125,18 +103,6 @@ double obstacleDistance() {
   return readings[validCount / 2];  // Median
 }
 
-float getAngleZFromArduino() {
-  if (mySerial.available()) {
-    String line = mySerial.readStringUntil('\n');
-    if (line.startsWith("ANGLEZ:")) {
-      String angleStr = line.substring(7);
-      float angleZ = angleStr.toFloat();
-      return angleZ;
-    }
-  }
-  return -999.0;  // No valid data
-}
-
 String htmlPage() {
   return R"rawliteral(
     <!DOCTYPE html>
@@ -179,7 +145,6 @@ void handleRoot() { server.send(200, "text/html", htmlPage()); }
 
 void setup() {
   Serial.begin(115200);
-  mySerial.begin(9600);
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
   pinMode(IN3, OUTPUT);
@@ -237,20 +202,13 @@ void setup() {
 }
 void loop() {
   server.handleClient();
-
-  if (isMovingForward) {
+  if(isMovingForward) {
     double dist = obstacleDistance();
-    if (dist > 0 && dist < 10) {
-      stop();
-      isMovingForward = false;
-      Serial.print("Obstacle detected :");
-      Serial.println(dist);
-    }
-  }
-
-  float angleZ = getAngleZFromArduino();
-  if (angleZ != -999.0) {
-    Serial.print("Received ANGLEZ from Arduino: ");
-    Serial.println(angleZ);
+      if(dist > 0 && dist < 20) {
+        stop();
+        isMovingForward = false;
+        Serial.print("Obstacle detected :");
+        Serial.println(dist);
+      }
   }
 }
