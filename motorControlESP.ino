@@ -105,28 +105,72 @@ double obstacleDistance() {
 
 String htmlPage() {
   return R"rawliteral(
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAR</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESP Car Control</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    color: #333;
+    margin: 20px 0;
+    font-size: clamp(1.2rem, 5vw, 2rem);
+  }
+  .btn {
+    width: clamp(120px, 30vw, 160px);
+    height: clamp(50px, 12vw, 70px);
+    margin: 8px;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    transition: background 0.2s, transform 0.1s;
+    touch-action: manipulation;
+  }
+  .btn:active {
+    transform: scale(0.95);
+    background-color: #2980b9;
+  }
+  .row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+</style>
 </head>
 <body>
-    <button onmousedown="sendCmd('forward')" onmouseup="sendCmd('stop')">Forward</button>
-    <button onmousedown="sendCmd('backward')" onmouseup="sendCmd('stop')">Backward</button>
-    <button onmousedown="sendCmd('left')" onmouseup="sendCmd('stop')">Left</button>
-    <button onmousedown="sendCmd('right')" onmouseup="sendCmd('stop')">Right</button>
-    <button onmousedown="sendCmd('stop')" onmouseup="sendCmd('stop')">Stop</button>
+  <h1>🚗 ESP Car Control</h1>
 
+  <div class="row">
+    <button class="btn" onmousedown="sendCmd('forward')" ontouchstart="sendCmd('forward')" onmouseup="sendCmd('stop')" ontouchend="sendCmd('stop')">Forward</button>
+  </div>
+  <div class="row">
+    <button class="btn" onmousedown="sendCmd('left')" ontouchstart="sendCmd('left')" onmouseup="sendCmd('stop')" ontouchend="sendCmd('stop')">Left</button>
+    <button class="btn" onmousedown="sendCmd('stop')" ontouchstart="sendCmd('stop')" onmouseup="sendCmd('stop')" ontouchend="sendCmd('stop')">Stop</button>
+    <button class="btn" onmousedown="sendCmd('right')" ontouchstart="sendCmd('right')" onmouseup="sendCmd('stop')" ontouchend="sendCmd('stop')">Right</button>
+  </div>
+  <div class="row">
+    <button class="btn" onmousedown="sendCmd('backward')" ontouchstart="sendCmd('backward')" onmouseup="sendCmd('stop')" ontouchend="sendCmd('stop')">Backward</button>
+  </div>
 
-
-
-    <script>
+<script>
   let lastCmdTime = 0;
   function sendCmd(dir) {
     const now = Date.now();
-    if (now - lastCmdTime > 100) {  // 100ms debounce
+    if (now - lastCmdTime > 100) {
       fetch('/' + dir);
       lastCmdTime = now;
     }
@@ -135,9 +179,9 @@ String htmlPage() {
 
 </body>
 </html>
-
-  )rawliteral";
+)rawliteral";
 }
+
 
 
 void handleRoot() { server.send(200, "text/html", htmlPage()); }
