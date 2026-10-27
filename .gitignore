@@ -1,2 +1,10 @@
 config.bat
 node_modules
+
+# Environment variables & secrets (added by GitHub Guardian)
+*.env
+!.env.example
+!.env.sample
+.envrc
+.venv/
+venv/
